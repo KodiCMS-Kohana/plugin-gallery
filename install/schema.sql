@@ -20,6 +20,6 @@ CREATE TABLE IF NOT EXISTS `__TABLE_PREFIX__photo_categories` (
 	`image` varchar(50) NOT NULL DEFAULT '',
 	`position` int(11) NOT NULL DEFAULT '0',
 	PRIMARY KEY (`id`),
-	UNIQUE KEY `slug` (`slug`),
+	UNIQUE KEY `slug` (`parent_id`, `slug`),
 	KEY `parent_id` (`parent_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
