@@ -22,17 +22,21 @@ class Model_Photo_Category extends ORM {
 
 		foreach ($res as & $category)
 		{
-			if(isset($categories[$category['id']]))
+			if(isset($categories[$category['id']]) OR $category['parent_id'] == 0)
 			{
 				$data[] = $category;
-				foreach ($categories[$category['id']] as & $c)
+				
+				if(isset($categories[$category['id']]))
 				{
-					$c['level'] = $category['level'] + 1;
-					
-					$data[] = $c;
-				}
+					foreach ($categories[$category['id']] as & $c)
+					{
+						$c['level'] = $category['level'] + 1;
 
-				$category['childs'] = $categories[$category['id']];
+						$data[] = $c;
+					}
+
+					$category['childs'] = $categories[$category['id']];
+				}
 			}
 		}
 		
