@@ -27,16 +27,8 @@ class Model_Photo extends ORM {
 		return array(
 			'photos' . DIRECTORY_SEPARATOR . 'full' => array(
 				'subfolder' => $this->category->path,
-				'quality' => 85
-			),
-			'photos' . DIRECTORY_SEPARATOR . '274_215' => array(
-				'subfolder' => $this->category->path,
-				'width' => 274,
-				'height' => 215,
-				'quality' => 100,
-				'master' => Image::AUTO,
-			),
-		);
+				'quality' => 100
+			)
 	}
 	
 	public function get_next_position()
@@ -154,9 +146,10 @@ class Model_Photo extends ORM {
 		return PUBLIC_URL . 'photos/full/' . $this->category->path . '/' . $this->filename;
 	}
 	
-	public function thumb()
+	public function thumb($width = 200, $height = 200, $master = Image::INVERSE)
 	{
-		return PUBLIC_URL . 'photos/274_215/' . $this->category->path . '/' . $this->filename;
+		$path = array('photos', 'full', $this->category->path, $this->filename);
+		return Image::cache(PUBLICPATH . implode(DIRECTORY_SEPARATOR, $path), $width, $height, $master);
 	}
 	
 	public function video($width = 600, $height = 400)
