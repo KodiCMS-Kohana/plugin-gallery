@@ -77,15 +77,10 @@ class Model_Photo_Category extends ORM {
 		);
 	}
 	
-	public function image($folder = '274_215')
+	public function image($width = 200, $height = 200, $master = Image::INVERSE)
 	{
-		return PUBLIC_URL . 'photos/' . $folder . '/' . $this->path . '/' . $this->image;
-	}
-	
-	public function image_exists($folder = '274_215')
-	{
-		$path = PUBLICPATH . 'photos/' . $folder . '/' . $this->path . '/' . $this->image;
-		return (file_exists($path) AND !is_dir($path));
+		$path = array('photos', 'full', $this->path, $this->image);
+		return Image::cache(PUBLICPATH . implode(DIRECTORY_SEPARATOR, $path), $width, $height, $master);
 	}
 
 	/**
