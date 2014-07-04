@@ -53,26 +53,30 @@ class Model_Widget_Gallery_Categories extends Model_Widget_Decorator_Pagination 
 	public function fetch_data()
 	{
 		$category_id = $this->get_current_category_id();
-		$category = ORM::factory('photo_category', $category_id);
 		
-		if(!$category->loaded())
+		if($category_id !== NULL)
 		{
-			return array(
-				'categories' => array(),
-				'photos' => array(),
-				'videos' => array(),
-				'category' => NULL
-			);
+			$category = ORM::factory('photo_category', $category_id);
+		
+			if ( ! $category->loaded())
+			{
+				return array(
+					'categories' => array(),
+					'photos' => array(),
+					'videos' => array(),
+					'category' => NULL
+				);
+			}
 		}
-
+		
 		$photos = ORM::factory('photo')
-			->where('category_id', '=', $category_id)
+			->where('category_id', '=', (int) $category_id)
 			->where('type', '=', Model_Photo::TYPE_IMAGE)
 			->find_all()
 			->as_array();
-		
+
 		$videos = ORM::factory('photo')
-			->where('category_id', '=', $category_id)
+			->where('category_id', '=', (int) $category_id)
 			->where('type', '=', Model_Photo::TYPE_VIDEO)
 			->find_all()
 			->as_array();
