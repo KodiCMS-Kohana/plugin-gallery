@@ -80,7 +80,8 @@ class Model_Photo_Category extends ORM {
 	public function image($width = 200, $height = 200, $master = Image::INVERSE)
 	{
 		$path = array('photos', 'full', $this->path, $this->image);
-		return Image::cache(PUBLICPATH . implode(DIRECTORY_SEPARATOR, $path), $width, $height, $master);
+		
+		return Image::cache(implode(DIRECTORY_SEPARATOR, $path), $width, $height, $master);
 	}
 
 	/**

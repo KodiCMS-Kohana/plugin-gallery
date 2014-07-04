@@ -150,7 +150,7 @@ class Model_Photo extends ORM {
 	public function thumb($width = 200, $height = 200, $master = Image::INVERSE)
 	{
 		$path = array('photos', 'full', $this->category->path, $this->filename);
-		return Image::cache(PUBLICPATH . implode(DIRECTORY_SEPARATOR, $path), $width, $height, $master);
+		return Image::cache(implode(DIRECTORY_SEPARATOR, $path), $width, $height, $master);
 	}
 	
 	public function video($width = 600, $height = 400)
