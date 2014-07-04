@@ -29,6 +29,7 @@ class Model_Photo extends ORM {
 				'subfolder' => $this->category->path,
 				'quality' => 100
 			)
+		);
 	}
 	
 	public function get_next_position()
