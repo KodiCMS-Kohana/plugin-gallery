@@ -56,9 +56,11 @@ class Model_Widget_Gallery_Categories extends Model_Widget_Decorator_Pagination 
 	{
 		$category_id = $this->get_current_category_id();
 		
+		$category = ORM::factory('photo_category');
+		
 		if ($category_id !== NULL)
 		{
-			$category = ORM::factory('photo_category', $category_id);
+			$category = $category->where('id', '=', $category_id)->find();
 		
 			if ( ! $category->loaded())
 			{
@@ -66,7 +68,7 @@ class Model_Widget_Gallery_Categories extends Model_Widget_Decorator_Pagination 
 					'categories' => array(),
 					'photos' => array(),
 					'videos' => array(),
-					'category' => ORM::factory('photo_category')
+					'category' => $category
 				);
 			}
 		}
