@@ -147,10 +147,10 @@ class Model_Photo extends ORM {
 		return PUBLIC_URL . 'photos/full/' . $this->category->path . '/' . $this->filename;
 	}
 	
-	public function thumb($width = 200, $height = 200, $master = Image::INVERSE)
+	public function thumb($width = 200, $height = 200, $master = Image::INVERSE, $crop = FALSE)
 	{
 		$path = array('photos', 'full', $this->category->path, $this->filename);
-		return Image::cache(implode(DIRECTORY_SEPARATOR, $path), $width, $height, $master);
+		return Image::cache(implode(DIRECTORY_SEPARATOR, $path), $width, $height, $master, $crop);
 	}
 	
 	public function video($width = 600, $height = 400)
