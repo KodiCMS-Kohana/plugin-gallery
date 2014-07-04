@@ -22,7 +22,7 @@ class Model_Widget_Gallery_Categories extends Model_Widget_Decorator_Pagination 
 			->from('photo_categories')
 			->limit(1);
 
-		if( ! empty($category_path))
+		if ( ! empty($category_path))
 		{
 			$query->where('path', '=', $category_path);
 		}
@@ -39,8 +39,10 @@ class Model_Widget_Gallery_Categories extends Model_Widget_Decorator_Pagination 
 		$categories = ORM::factory('photo_category')
 			->where('parent_id', '=', (int) $this->get_current_category_id());
 		
-		if( $this->with_image )
+		if ($this->with_images)
+		{
 			$categories->where('image', '!=', '');
+		}
 		
 		return $categories;
 	}
@@ -54,7 +56,7 @@ class Model_Widget_Gallery_Categories extends Model_Widget_Decorator_Pagination 
 	{
 		$category_id = $this->get_current_category_id();
 		
-		if($category_id !== NULL)
+		if ($category_id !== NULL)
 		{
 			$category = ORM::factory('photo_category', $category_id);
 		
@@ -106,7 +108,7 @@ class Model_Widget_Gallery_Categories extends Model_Widget_Decorator_Pagination 
 	
 	public function set_values(array $data)
 	{
-		if( ! empty( $data['category_id'] ))
+		if ( ! empty( $data['category_id'] ))
 		{
 			$this->category_id = (int) $data['category_id'];
 		}
@@ -124,7 +126,7 @@ class Model_Widget_Gallery_Categories extends Model_Widget_Decorator_Pagination 
 		$request = $this->_ctx->request();
 		$path = $this->_ctx->get('.category_path');
 		$query = 1;
-		if($request instanceof Request)
+		if ($request instanceof Request)
 		{
 			$query = (int) $request->query('page');
 		}
