@@ -66,7 +66,7 @@ class Model_Widget_Gallery_Categories extends Model_Widget_Decorator_Pagination 
 					'categories' => array(),
 					'photos' => array(),
 					'videos' => array(),
-					'category' => NULL
+					'category' => ORM::factory('photo_category')
 				);
 			}
 		}
