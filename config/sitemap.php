@@ -6,8 +6,8 @@ return array(
 		'children' => array(
 			array(
 				'name' => __('Gallery'), 
-				'url' => URL::backend('photos'),
-				'icon' => 'picture',
+				'url' => Route::get('backend')->uri(array('controller' => 'photos')),
+				'icon' => 'picture-o',
 				'priority' => 200,
 				'permissions' => 'photos.index'
 			)

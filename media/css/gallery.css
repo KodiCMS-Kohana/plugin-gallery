@@ -1,30 +1,8 @@
-
-.icon-trash {
-	top: -5px;
-	right: -5px;
-}
-
-.icon-cog {
-	top: -5px;
-	left: -5px;
-}
-
-.icon-picture {
-	right: -5px;
-	bottom: -5px;
-}
-
 .option {
-	display: none;
-	position: absolute;
 	cursor: pointer;
 }
 
-.span1:hover .option {
-	display: block;
-}
-
-.categories .span1 {
+.categories .item {
 	position: relative;
 }
 
@@ -64,7 +42,7 @@
 	.thumbnails {
 
 	}
-		.thumbnails .span1 {
+		.thumbnails .item {
 			margin-top: 20px;
 			position: relative;
 		}
@@ -72,3 +50,13 @@
 		.thumbnails img {
 			height: 60px !important;
 		}
+		
+		.thumbnail .thumbnail-options {
+			margin-top: 3px;
+		}
+
+#photos .start-sorting {
+	min-height: 50px;
+	min-width: 50px;
+	border: 2px dashed #ccc;
+}

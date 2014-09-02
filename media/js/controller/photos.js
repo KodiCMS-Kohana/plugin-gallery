@@ -15,7 +15,7 @@ cms.init.add('photos_index', function(){
 			}
 		});
 
-		$('.photos').on('click', '.icon-trash', function() {
+		$('.photos').on('click', '.remove-item', function() {
 			var cont = $(this).parent();
 			var id = cont.data('id');
 
@@ -30,8 +30,8 @@ cms.init.add('photos_index', function(){
 	});
 	
 
-	$('.photos').on('click', '.icon-picture', function() {
-		var cont = $(this).parent();
+	$('.photos').on('click', '.primary-item', function() {
+		var cont = $(this).closest('.item');
 		var id = cont.data('id');
 		var self = $(this);
 		
@@ -52,11 +52,11 @@ cms.init.add('photos_index', function(){
 		},'json')
 	});
 
-	$('.categories').on('click', '.icon-trash', function() {
+	$('.categories').on('click', '.remove-item', function() {
 		if ( ! confirm(__('Are you sure?')))
 			return;
 		
-		var cont = $(this).parent();
+		var cont = $(this).closest('.item');
 		var id = cont.data('id');
 		
 		Api.post('/api-photos.category_delete', {id: id}, function(request){
@@ -66,9 +66,9 @@ cms.init.add('photos_index', function(){
 		},'json')
 	});
 
-	$( ".droppable .span1" ).droppable({
+	$( ".droppable .item" ).droppable({
 //		tolerance: 'intersect',
-		accept: ".sortable .span1",
+		accept: ".sortable .item",
 		hoverClass: "drop",
 		drop: function( event, ui ) {
 			var element = $(ui.draggable);
@@ -88,8 +88,13 @@ cms.init.add('photos_index', function(){
     });
 	
 	$('.categories').sortable({
-		cursor: 'move',
 		items: '.ui-sort',
+		cursor: 'move',
+		distance: 2,
+		tolerance: 'pointer',
+		forcePlaceholderSize: true,
+		helper: 'clone',
+		opacity: 0.65,
 		update: function(event, ui){
 			var pos = $('.categories').sortable("toArray", {attribute: 'data-id'});
 			cms.loader.show();
@@ -103,6 +108,11 @@ cms.init.add('photos_index', function(){
 
 	$('.sortable').sortable({
 		cursor: 'move',
+		distance: 2,
+		tolerance: 'pointer',
+		forcePlaceholderSize: true,
+		helper: 'clone',
+		opacity: 0.65,
 		update: function(event, ui){
 			var pos = $('.sortable').sortable("toArray", {attribute: 'data-id'});
 			cms.loader.show();
@@ -140,7 +150,7 @@ cms.init.add('photos_index', function(){
 		}, 'html');
 	});
 	
-	$('#upload-video form').on('submit', function(e){
+	$('#upload-video').on('submit', function(e){
 		Api.post($(this).attr('action'), $(this).serialize(), function(response) {
 			var row = $(response.response).hide();
 			$('.photos').append(row.fadeIn(500));
