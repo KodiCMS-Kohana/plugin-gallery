@@ -16,7 +16,10 @@ cms.init.add('photos_index', function(){
 		});
 
 		$('.photos').on('click', '.remove-item', function() {
-			var cont = $(this).parent();
+			if ( ! confirm(__('Are you sure?')))
+				return;
+		
+			var cont = $(this).closest('.item');
 			var id = cont.data('id');
 
 			Api.post('/api-photos.delete', {id: id}, function(resp){
