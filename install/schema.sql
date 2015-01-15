@@ -4,6 +4,8 @@ CREATE TABLE IF NOT EXISTS `__TABLE_PREFIX__photos` (
 	`position` int(11) NOT NULL DEFAULT '0',
 	`type` varchar(29) NOT NULL DEFAULT 'image',
 	`filename` varchar(255) NOT NULL,
+	`title` varchar(255) NOT NULL,
+	`description` text NOT NULL,
 	`created_on` datetime NOT NULL,
 	PRIMARY KEY (`id`),
 	KEY `category_id` (`category_id`),

@@ -23,7 +23,7 @@ class Model_Photo extends ORM {
 	);
 
 	public function images()
-	{	
+	{
 		return array(
 			'photos' . DIRECTORY_SEPARATOR . 'full' => array(
 				'subfolder' => $this->category->path,
@@ -31,7 +31,7 @@ class Model_Photo extends ORM {
 			)
 		);
 	}
-	
+
 	public function get_next_position()
 	{
 		$last_position = DB::select(array(DB::expr('MAX(position)'), 'pos'))
@@ -39,11 +39,11 @@ class Model_Photo extends ORM {
 			->where('category_id', '=', $this->category_id)
 			->execute($this->_db)
 			->get('pos', 0);
-		
+
 		return ((int) $last_position) + 1;
 	}
 
-	public function create(\Validation $validation = NULL) 
+	public function create(\Validation $validation = NULL)
 	{
 		if ($this->position == 0)
 		{
@@ -52,17 +52,17 @@ class Model_Photo extends ORM {
 
 		return parent::create($validation);
 	}
-	
+
 	public function empty_category_image()
 	{
 		DB::update('photo_categories')
 			->where('image', '=', $this->filename)
 			->set(array('image' => ''))
 			->execute($this->_db);
-		
+
 		return $this;
 	}
-	
+
 	/**
 	 * 
 	 * @param integer $category_id
@@ -72,68 +72,68 @@ class Model_Photo extends ORM {
 	{
 		$category = ORM::factory('photo_category', $category_id);
 		$status = FALSE;
-		
-		if( ($category_id > 0 AND ! $category->loaded()) OR ! $this->loaded() )
+
+		if (($category_id > 0 AND ! $category->loaded()) OR ! $this->loaded())
 		{
 			return FALSE;
 		}
-		
-		if($this->type == Model_Photo::TYPE_IMAGE)
+
+		if ($this->type == Model_Photo::TYPE_IMAGE)
 		{
 			foreach ($this->images() as $path => $data)
 			{
 				$old_dir = PUBLICPATH . $path . DIRECTORY_SEPARATOR . $this->category->path . DIRECTORY_SEPARATOR;
 				$new_dir = PUBLICPATH . $path . DIRECTORY_SEPARATOR . $category->path . DIRECTORY_SEPARATOR;
 
-				if(file_exists($old_dir . $this->filename))
+				if (file_exists($old_dir . $this->filename))
 				{
-					if( ! is_dir($new_dir) )
+					if (!is_dir($new_dir))
 					{
-						mkdir( $new_dir, 0777, TRUE );
-						chmod( $new_dir, 0777 );
+						mkdir($new_dir, 0777, TRUE);
+						chmod($new_dir, 0777);
 					}
 
 					$status = rename($old_dir . $this->filename, $new_dir . $this->filename);
 				}
 			}
 		}
-		
-		if($status === TRUE)
+
+		if ($status === TRUE)
 		{
 			$this->set('category_id', $category_id)->update();
 		}
-		
+
 		return $status;
 	}
 
 	public function delete()
 	{
-		if ( ! $this->loaded() )
+		if (!$this->loaded())
 		{
 			throw new Kohana_Exception('photo not loaded');
 		}
-		
+
 		$this->empty_category_image();
-		
-		if($this->type == Model_Photo::TYPE_IMAGE)
+
+		if ($this->type == Model_Photo::TYPE_IMAGE)
 		{
 			$this->unlink_files();
 		}
-		
+
 		return parent::delete();
 	}
-	
+
 	public function delete_by_category($id)
 	{
 		$photos = $this->reset(FALSE)
 			->where('category_id', '=', (int) $id)
 			->find_all();
-		
+
 		foreach ($photos as $photo)
 		{
 			$photo->delete();
 		}
-		
+
 		return $this;
 	}
 
@@ -146,25 +146,25 @@ class Model_Photo extends ORM {
 	{
 		return PUBLIC_URL . 'photos/full/' . $this->category->path . '/' . $this->filename;
 	}
-	
+
 	public function thumb($width = 200, $height = 200, $master = Image::INVERSE, $crop = FALSE)
 	{
 		$path = array('photos', 'full', $this->category->path, $this->filename);
 		return Image::cache(implode(DIRECTORY_SEPARATOR, $path), $width, $height, $master, $crop);
 	}
-	
+
 	public function video($width = 600, $height = 400)
 	{
-		if(strpos($this->filename, 'youtube') !== FALSE)
-			return '<iframe width="'.$width.'" height="'.$height.'" src="'.$this->filename.'"></iframe>';
+		if (strpos($this->filename, 'youtube') !== FALSE)
+			return '<iframe width="' . $width . '" height="' . $height . '" src="' . $this->filename . '"></iframe>';
 		else
-			return "<object width='".$width."' height='".$height."'>".
-				"<param name='movie' value='".$this->filename."'></param>".
-				"<param name='wmode' value='transparent'></param>".
-				"<param name='allowScriptAccess' value='always'></param>".
-				"<param name='allowFullScreen' value='true'></param>".
-				"<embed src='".$this->filename."' type='application/x-shockwave-flash' wmode='window' width='".$width."' height='".$height."' allowFullScreen='true' allowScriptAccess='always'></embed>".
-			'</object>';
+			return "<object width='" . $width . "' height='" . $height . "'>" .
+				"<param name='movie' value='" . $this->filename . "'></param>" .
+				"<param name='wmode' value='transparent'></param>" .
+				"<param name='allowScriptAccess' value='always'></param>" .
+				"<param name='allowFullScreen' value='true'></param>" .
+				"<embed src='" . $this->filename . "' type='application/x-shockwave-flash' wmode='window' width='" . $width . "' height='" . $height . "' allowFullScreen='true' allowScriptAccess='always'></embed>" .
+				'</object>';
 	}
 
 	public function is_image()
@@ -174,10 +174,9 @@ class Model_Photo extends ORM {
 
 	public function filter_by_category($id)
 	{
-		 return $this
-			->where('category_id', '=', (int) $id);
+		return $this->where('category_id', '=', (int) $id);
 	}
-	
+
 	/**
 	 * 
 	 * @param string $file
@@ -186,31 +185,31 @@ class Model_Photo extends ORM {
 	 * @return null|string
 	 * @throws Kohana_Exception
 	 */
-	public function add_image( $file, $field = NULL, $params = NULL )
+	public function add_image($file, $field = NULL, $params = NULL)
 	{
-		if ( $field !== NULL AND ! $this->loaded() )
+		if ($field !== NULL AND ! $this->loaded())
 		{
-			throw new Kohana_Exception( 'Model must be loaded' );
+			throw new Kohana_Exception('Model must be loaded');
 		}
 
-		if ( $params === NULL )
+		if ($params === NULL)
 		{
 			$params = $this->images();
 		}
 
-		$tmp_file = TMPPATH . trim( $file );
+		$tmp_file = TMPPATH . trim($file);
 
-		if ( ! file_exists( $tmp_file ) OR is_dir( $tmp_file ))
+		if (!file_exists($tmp_file) OR is_dir($tmp_file))
 		{
 			return NULL;
 		}
 
-		$ext = strtolower( pathinfo( $tmp_file, PATHINFO_EXTENSION ) );
+		$ext = strtolower(pathinfo($tmp_file, PATHINFO_EXTENSION));
 		$filename = uniqid() . '.' . $ext;
-		
-		foreach ( $params as $path => $_params )
+
+		foreach ($params as $path => $_params)
 		{
-			$path = PUBLICPATH . trim( $path, '/' ) . DIRECTORY_SEPARATOR;
+			$path = PUBLICPATH . trim($path, '/') . DIRECTORY_SEPARATOR;
 
 			$local_params = array(
 				'width' => NULL,
@@ -220,73 +219,77 @@ class Model_Photo extends ORM {
 				'crop' => TRUE
 			);
 
-			$_params = Arr::merge( $local_params, $_params );
-			
-			if( !empty($_params['subfolder']) )
+			$_params = Arr::merge($local_params, $_params);
+
+			if (!empty($_params['subfolder']))
 			{
 				$path .= trim($_params['subfolder']) . DIRECTORY_SEPARATOR;
 			}
-			
+
 			$path = FileSystem::normalize_path($path);
-			
-			if ( ! is_dir( $path ) )
+
+			if (!is_dir($path))
 			{
-				mkdir( $path, 0777, TRUE );
-				chmod( $path, 0777 );
+				mkdir($path, 0777, TRUE);
+				chmod($path, 0777);
 			}
 
 			$file = $path . $filename;
 
-			if ( ! copy( $tmp_file, $file ) )
+			if (!copy($tmp_file, $file))
 			{
 				continue;
 			}
 
-			chmod( $file, 0777 );
+			chmod($file, 0777);
 
-			$image = Image::factory( $file );
+			$image = Image::factory($file);
 
-			if(!empty($_params['width']) AND !empty($_params['height']))
+			if (!empty($_params['width']) AND ! empty($_params['height']))
 			{
-				if($_params['width'] < $image->width OR $_params['height'] < $image->height )
-					$image->resize( $_params['width'], $_params['height'], $_params['master'] );
+				if ($_params['width'] < $image->width OR $_params['height'] < $image->height)
+				{
+					$image->resize($_params['width'], $_params['height'], $_params['master']);
+				}
 
-				if($_params['crop'])
-					$image->crop( $_params['width'], $_params['height'] );
+				if ($_params['crop'])
+				{
+					$image->crop($_params['width'], $_params['height']);
+				}
 			}
 
 			$image->save();
 		}
 
-		if ( $field !== NULL )
+		if ($field !== NULL)
 		{
 			$this
 				->set($field, $filename)
 				->update();
 		}
-			
-		unlink( $tmp_file );
+
+		unlink($tmp_file);
 
 		return $filename;
 	}
-	
+
 	/**
 	 * 
 	 * @param type $field
 	 * @return \ORM
 	 * @throws Kohana_Exception
 	 */
-	public function delete_image( $field )
+	public function delete_image($field)
 	{
-		if ( ! $this->loaded() )
+		if (!$this->loaded())
 		{
-			throw new Kohana_Exception( 'Model must be loaded' );
+			throw new Kohana_Exception('Model must be loaded');
 		}
 
 		foreach ($this->images() as $path => $data)
 		{
 			$file = PUBLICPATH . $path . DIRECTORY_SEPARATOR . $this->get($field);
-			if(file_exists($file) AND !is_dir($file))
+			if (file_exists($file) AND ! is_dir($file))
 			{
 				unlink($file);
 			}
@@ -295,10 +298,10 @@ class Model_Photo extends ORM {
 		$this
 			->set($field, '')
 			->update();
-		
+
 		return $this;
 	}
-	
+
 	/**
 	 * 
 	 * @return \Model_Photo
@@ -308,39 +311,40 @@ class Model_Photo extends ORM {
 		foreach ($this->images() as $path => $data)
 		{
 			$file = PUBLICPATH . $path . DIRECTORY_SEPARATOR . $this->category->path . $this->filename;
-			if(file_exists($file))
+			if (file_exists($file))
 			{
 				unlink($file);
 			}
 		}
-		
+
 		return $this;
 	}
-	
+
 	/**
 	 * return string
 	 */
-	public function parse_video_link( $string )
+	public function parse_video_link($string)
 	{
-		if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $string, $match)) 
+		if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $string, $match))
 		{
 			return 'http://www.youtube.com/embed/' . $match[1];
 		}
-		elseif( preg_match('%([^"&?/ ]{11})%i', $string, $match))
+		elseif (preg_match('%([^"&?/ ]{11})%i', $string, $match))
 		{
 			return 'http://www.youtube.com/embed/' . $match[0];
 		}
-		
+
 		return $string;
 	}
-	
+
 	public function after_save()
 	{
 		Cache::instance()->delete_tag('gallery');
 	}
 
-    public function after_delete( $id )	
+	public function after_delete($id)
 	{
 		Cache::instance()->delete_tag('gallery');
 	}
+
 }

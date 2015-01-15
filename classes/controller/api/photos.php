@@ -5,7 +5,7 @@ class Controller_API_Photos extends Controller_System_API {
 	public function post_upload()
 	{
 		$file = Upload::file($_FILES['file']);
-		
+
 		$photo = ORM::factory('photo')
 			->values(array(
 				'category_id' => (int) $this->param('id', NULL, 0),
@@ -15,68 +15,72 @@ class Controller_API_Photos extends Controller_System_API {
 
 		$photo->add_image($file, 'filename');
 
-		$this->response( View::factory('photos/image', array('photo' => $photo, 'category' => $photo->category))->render() );
+		$this->response(View::factory('photos/image', array('photo' => $photo, 'category' => $photo->category))->render());
 	}
 	
 	public function post_from_url()
 	{
 		$url = $this->param('url', NULL, TRUE);
 		$category_id = (int) $this->param('category_id', NULL, TRUE);
-		
-		if( ! Valid::url($url))
+
+		if (!Valid::url($url))
 		{
 			$this->message(__('URL not valid'));
 			return;
 		}
-		
-		if ( ! preg_match ("/\b(?:vimeo|youtube|dailymotion)\.com\b/i", $url)) 
+
+		if (!preg_match("/\b(?:vimeo|youtube|dailymotion)\.com\b/i", $url))
 		{
 			$this->message(__('Video must be from youtube'));
 			return;
 		}
-		
+
 		$photo = ORM::factory('photo');
-		
+
 		$photo->values(array(
 			'filename' => $photo->parse_video_link($url),
 			'type' => Model_Photo::TYPE_VIDEO,
 			'category_id' => $category_id
 		))->create();
-		
-		$this->response( View::factory('photos/image', array('photo' => $photo, 'category' => $photo->category))->render() );
+
+		$this->response(View::factory('photos/image', array('photo' => $photo, 'category' => $photo->category))->render());
 	}
 	
 	public function post_delete()
 	{
 		$id = (int) $this->param('id', NULL, TRUE);
 		$photo = ORM::factory('photo', $id)->delete();
-		
+
 		$this->response(TRUE);
 	}
 	
 	public function post_category_save()
 	{
 		$id = (int) $this->param('id');
-		
+
 		$data = array(
 			'title' => $this->param('title', NULL, TRUE),
 			'description' => $this->param('description', NULL),
 			'slug' => $this->param('slug', NULL, TRUE)
 		);
-		
+
 		$category = ORM::factory('photo_category');
-		
-		if($id > 0)
+
+		if ($id > 0)
 		{
 			$category->where('id', '=', $id)->find();
-			
-			if( ! $category->loaded()) return;
+
+			if (!$category->loaded())
+			{
+				$this->response(FALSE);
+				return;
+			}
 		}
 		else
 		{
 			$data['parent_id'] = (int) $this->param('parent_id', NULL);
 		}
-		
+
 		$category->values($data)->save();
 		$this->response(View::factory('photos/category', array('category' => $category))->render());
 	}
@@ -84,19 +88,23 @@ class Controller_API_Photos extends Controller_System_API {
 	public function get_category_edit()
 	{
 		$id = (int) $this->param('id');
-		
+
 		$category = ORM::factory('photo_category', $id);
-			
-		if( ! $category->loaded()) return;
-		
+
+		if (!$category->loaded())
+		{
+			$this->response(FALSE);
+			return;
+		}
+
 		$this->response(View::factory('photos/blocks/category_form', array('category' => $category))->render());
 	}
 	
 	public function post_category_delete()
 	{
 		$id = (int) $this->param('id', NULL, TRUE);
-		
-		if(ORM::factory('photo_category', $id)->delete())
+
+		if (ORM::factory('photo_category', $id)->delete())
 		{
 			$this->response(TRUE);
 		}
@@ -106,10 +114,10 @@ class Controller_API_Photos extends Controller_System_API {
 	{
 		$id = (int) $this->param('id', NULL, TRUE);
 		$category_id = (int) $this->param('category_id', NULL, TRUE);
-		
+
 		$photo = ORM::factory('photo', $id);
 		$category = ORM::factory('photo_category', $category_id);
-		if($photo->loaded() AND $category->loaded())
+		if ($photo->loaded() AND $category->loaded())
 		{
 			$category->values(array(
 				'image' => $photo->filename
@@ -123,7 +131,7 @@ class Controller_API_Photos extends Controller_System_API {
 	{
 		$parent_id = (int) $this->param('parent_id', NULL, TRUE);
 		$data = $this->param('pos', NULL, TRUE);
-		
+
 		foreach ($data as $pos => $id)
 		{
 			DB::update('photo_categories')
@@ -134,7 +142,7 @@ class Controller_API_Photos extends Controller_System_API {
 				->where('parent_id', '=', $parent_id)
 				->execute();
 		}
-		
+
 		ORM::factory('photo')->after_save();
 
 		$this->response(TRUE);
@@ -144,7 +152,7 @@ class Controller_API_Photos extends Controller_System_API {
 	{
 		$id = (int) $this->param('parent_id', NULL, TRUE);
 		$category_id = (int) $this->param('category_id', NULL, TRUE);
-		
+
 		$category = ORM::factory('photo_category', $id);
 
 		$this->response($category->move($category_id));
@@ -154,12 +162,12 @@ class Controller_API_Photos extends Controller_System_API {
 	{
 		$id = (int) $this->param('id', NULL, TRUE);
 		$category_id = (int) $this->param('category_id', NULL);
-		
+
 		$photo = ORM::factory('photo', $id);
-		
-		if( $photo->move($category_id) )
+
+		if ($photo->move($category_id))
 		{
-			if($this->param('category_image') == 'true')
+			if ($this->param('category_image') == 'true')
 			{
 				$photo->empty_category_image();
 			}
@@ -172,14 +180,14 @@ class Controller_API_Photos extends Controller_System_API {
 	{
 		$data = $this->param('pos', NULL, TRUE);
 		$category_id = (int) $this->param('category_id', NULL);
-		
+
 		$old_pos = DB::select('id', 'position')
 			->from('photos')
 			->where('category_id', '=', $category_id)
 			->order_by('position', 'asc')
 			->execute()
 			->as_array(NULL, 'id');
-		
+
 		$diff = array_diff_assoc($old_pos, $data);
 		foreach ($data as $pos => $id)
 		{
@@ -191,9 +199,45 @@ class Controller_API_Photos extends Controller_System_API {
 				->where('category_id', '=', $category_id)
 				->execute();
 		}
-		
+
 		ORM::factory('photo')->after_save();
 
+		$this->response(TRUE);
+	}
+	
+	public function get_image_settings()
+	{
+		$id = (int) $this->param('id', NULL, TRUE);
+		$photo = ORM::factory('photo', $id);
+		
+		if (!$photo->loaded())
+		{
+			$this->response(FALSE);
+			return;
+		}
+		
+		$this->response((string) View::factory('photos/blocks/image_form', array(
+			'image' => $photo
+		)));
+	}
+	
+	public function post_image_save()
+	{
+		$id = (int) $this->param('id');
+
+		$data = array(
+			'title' => $this->param('title', NULL),
+			'description' => $this->param('description', NULL)
+		);
+
+		$photo = ORM::factory('photo', $id);
+		if (!$photo->loaded())
+		{
+			$this->response(FALSE);
+			return;
+		}
+
+		$photo->values($data)->save();
 		$this->response(TRUE);
 	}
 }

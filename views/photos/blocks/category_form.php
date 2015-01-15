@@ -3,7 +3,7 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				<h4 class="no-margin-vr"><?php echo __('New category'); ?></h4>
+				<h4 class="no-margin-vr"><?php echo __('Settings'); ?></h4>
 			</div>
 			<form action="#" method="post">
 				<?php echo Form::hidden('id', $category->id); ?>

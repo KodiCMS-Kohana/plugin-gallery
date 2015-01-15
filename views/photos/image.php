@@ -10,6 +10,7 @@
 			<?php if($category->id > 0 AND $category->image != $photo->filename AND $photo->is_image()): ?>
 			<?php echo UI::icon('image option primary-item pull-left'); ?>
 			<?php endif; ?>
+			<?php echo UI::icon('pencil option edit-item text-success pull-left'); ?>
 			<?php echo UI::icon('trash-o option remove-item text-danger pull-right'); ?>
 			<div class="clearfix"></div>
 		</div>

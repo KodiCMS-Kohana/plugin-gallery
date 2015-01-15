@@ -30,6 +30,23 @@ cms.init.add('photos_index', function(){
 				}
 			},'json')
 		});
+		
+		$('.photos').on('click', '.edit-item', function() {
+			var cont = $(this).closest('.item');
+			var id = cont.data('id');
+
+			Api.get('/api-photos.image_settings', {id: id}, function(resp){
+				if(resp.response) {
+					$.fancybox({ 
+						width: 600,
+						height: 239,
+						padding: 0,
+						autoSize: false,
+						content: resp.response
+					});
+				}
+			},'json')
+		});
 	});
 	
 
@@ -126,6 +143,29 @@ cms.init.add('photos_index', function(){
 			},'json')
 		}
 	});
+	
+	$('body').on('click', '#image-modal .btn-close', function(e) {
+		$.fancybox.close();
+		e.preventDefault();
+	}).on('click', '#image-modal .btn-save', function(e) {
+		var form = $(this).closest('form');
+		var id = form.find('input[name="id"]').val();
+		var title = form.find('input[name="title"]').val();
+		var description = form.find('textarea[name="description"]').val();
+		var slug = form.find('input[name="slug"]').val();
+
+		Api.post('/api-photos.image_save', {
+			id: id,
+			title: title,
+			description: description
+		}, function(resp) {
+			if(resp.response) {
+				$.fancybox.close();
+			}
+		}, 'json');
+		
+		e.preventDefault();
+	});
 
 	$('#create-category').click(function() {
 		$('#category-modal')
@@ -144,8 +184,6 @@ cms.init.add('photos_index', function(){
 				$(resp.response)
 					.on('submit', 'form', function(e) {
 						save_category_modal_form($(this));
-						
-						
 						e.preventDefault();
 					})
 					.modal();
